@@ -271,6 +271,7 @@ qq.FileUploaderBasic = function(o){
         // set to true to see the server response
         debug: false,
         action: '/server/upload',
+        csrf_token: {}, // Adds csrf token in post form. Dict: {"key": "token"}
         params: {},
         customHeaders: {},
         button: null,
@@ -1234,6 +1235,20 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         form.setAttribute('action', queryString);
         form.setAttribute('target', iframe.name);
         form.style.display = 'none';
+        var csrf_dom_element = null;
+        
+        if(!this._options.csrf_token.isEmpty()) {
+        	for(var key in this._options.csrf_token) {
+        		var value = this._options.csrf_token[key];
+        		csrf_dom_element = qq.toElement('<div style="display:none"><input type="hidden" name="' + key +'" value="' + value +'" /></div>');
+        		break;
+        	}
+        }
+        
+        if(csrf_dom_element) {
+        	form.appendChild(csrf_dom_element);
+        }
+        
         document.body.appendChild(form);
 
         return form;
@@ -1416,3 +1431,12 @@ qq.DisposeSupport = {
     this.addDisposer(qq.attach.apply(this, arguments));
   }
 };
+
+/**
+ * Checks if dict object is empty
+ */
+
+Object.prototype.isEmptyDict = function() {
+	for(var i in this) {return false;}
+};
+
