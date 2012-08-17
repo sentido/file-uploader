@@ -1236,17 +1236,20 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         form.setAttribute('target', iframe.name);
         form.style.display = 'none';
         var csrf_dom_element = null;
+        var csrf_div_wrapper = null;
         
         if(!this._options.csrf_token.isEmpty()) {
         	for(var key in this._options.csrf_token) {
         		var value = this._options.csrf_token[key];
-        		csrf_dom_element = qq.toElement('<div style="display:none"><input type="hidden" name="' + key +'" value="' + value +'" /></div>');
+        		csrf_div_wrapper = qq.toElement('<div style="display:none"></div>');
+        		csrf_dom_element = qq.toElement('<input type="hidden" name="' + key +'" value="' + value +'" />');
         		break;
         	}
         }
         
         if(csrf_dom_element) {
-        	form.appendChild(csrf_dom_element);
+        	csrf_div_wrapper.appendChild(csrf_dom_element);
+        	form.appendChild(csrf_div_wrapper);
         }
         
         document.body.appendChild(form);
