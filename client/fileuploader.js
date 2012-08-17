@@ -47,6 +47,14 @@ qq.indexOf = function(arr, elt, from){
     return -1;
 };
 
+/**
+ * Checks if dict object is empty
+ */
+
+qq.isEmptyDict = function(obj) {
+	for(var i in obj) {return false;}
+};
+
 qq.getUniqueId = (function(){
     var id = 0;
     return function(){ return id++; };
@@ -356,6 +364,7 @@ qq.FileUploaderBasic.prototype = {
             encoding: this._options.encoding,
             maxConnections: this._options.maxConnections,
             customHeaders: this._options.customHeaders,
+            csrf_token: this._options.csrf_token,
             inputName: this._options.inputName,
             extraDropzones: this._options.extraDropzones,
             onProgress: function(id, fileName, loaded, total){
@@ -1238,9 +1247,12 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         var csrf_dom_element = null;
         var csrf_div_wrapper = null;
         
-        if(!this._options.csrf_token.isEmpty()) {
-        	for(var key in this._options.csrf_token) {
-        		var value = this._options.csrf_token[key];
+        var csrf_dict = this._options.csrf_token;
+        
+        // Set attributes for div and input
+        if(!qq.isEmptyDict(csrf_dict)) {
+        	for(var key in csrf_dict) {
+        		var value = csrf_dict[key];
         		csrf_div_wrapper = qq.toElement('<div style="display:none"></div>');
         		csrf_dom_element = qq.toElement('<input type="hidden" name="' + key +'" value="' + value +'" />');
         		break;
@@ -1253,7 +1265,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         }
         
         document.body.appendChild(form);
-
+        
         return form;
     }
 });
@@ -1434,12 +1446,3 @@ qq.DisposeSupport = {
     this.addDisposer(qq.attach.apply(this, arguments));
   }
 };
-
-/**
- * Checks if dict object is empty
- */
-
-Object.prototype.isEmptyDict = function() {
-	for(var i in this) {return false;}
-};
-
